@@ -1,0 +1,9 @@
+import com.theeyetribe.client.GazeManager;
+
+public class TETSimple
+{
+    public static void main(String[] args)
+    {
+        final GazeManager gm = GazeManager.getInstance();
+    }
+}

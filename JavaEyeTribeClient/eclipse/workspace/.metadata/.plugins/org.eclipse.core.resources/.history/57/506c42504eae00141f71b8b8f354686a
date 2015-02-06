@@ -1,0 +1,99 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.theeyetribe.client.*;
+import com.theeyetribe.client.GazeManager.ApiVersion;
+import com.theeyetribe.client.GazeManager.ClientMode;
+import com.theeyetribe.client.data.*;
+import com.theeyetribe.client.reply.*;
+import com.theeyetribe.client.request.*;
+
+public class TETSimple
+{
+	
+    public static void main(String[] args)
+    {
+    	
+    	final GazeManager gm = GazeManager.getInstance();
+    	gm.activate(ApiVersion.VERSION_1_0, ClientMode.PUSH);
+    	
+    	GazeListener gazeListener = new GazeListener(new Frame());
+        
+        gm.addGazeListener(gazeListener);
+        
+        //TODO: Do awesome gaze control wizardry
+        
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            @Override
+            public void run()
+            {
+                gm.removeGazeListener(gazeListener);
+                gm.deactivate();
+            }
+        });
+    }
+    
+    private static class GazeListener implements IGazeListener
+    {
+    	Frame frame;
+    	
+    	public GazeListener(Frame frame){
+    		this.frame = frame;
+    	}
+    	
+        @Override
+        public void onGazeUpdate(GazeData gazeData)
+        {
+            frame.setCoordinates(gazeData.smoothedCoordinates.x, gazeData.smoothedCoordinates.y);
+            frame.repaint();
+        	System.out.println(gazeData.toString());
+        }
+    }
+    
+    private static class Frame extends JPanel{
+    	
+    	JFrame frame;
+    	double x;
+    	double y;
+    	
+    	public Frame(){
+    		super();
+    		frame = new JFrame();
+    		
+    		x = 0;
+    		y = 0;
+    		
+    		this.setPreferredSize(new Dimension(1400,800));
+    		this.setBackground(Color.darkGray);
+    		this.setVisible(true);
+    		
+    		frame.setSize(new Dimension(1400,800));
+    		frame.add(this);
+    		frame.pack();
+    		frame.setVisible(true);
+    		
+    		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    		
+    	}
+    	
+    	@Override
+    	public void paintComponent(Graphics graphics){
+    		
+    		super.paintComponent(graphics);
+    		
+    		graphics.setColor(Color.red);
+    		graphics.fillOval((int) (x + 50), (int)(y + 50), 100, 100);
+    	}
+    	
+    	public void setCoordinates(double x, double y){
+    		this.x = x;
+    		this.y = y;
+    	}
+    	
+    }
+}
