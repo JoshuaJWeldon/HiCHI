@@ -50,7 +50,7 @@
                     $conn = new mysqli($servername, $username, $pass, $dbname);
                 
                     if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
+                        die ("<p>Connection failed: " . $conn->connect_error . " </p>");
                     }
 
                     $sql = "SELECT firstname FROM users WHERE ID = " . $ID;
@@ -66,7 +66,13 @@
                         
                         $conn->close();
                         
-                        header("Location: http://146.148.87.66/GuestA/twitterpage.php");
+                        /* Redirect to a different page in the current directory that was requested */
+                        $host  = $_SERVER['HTTP_HOST'];
+                        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                        $extra = 'twitterpage.php';
+                        header("Location: http://$host$uri/$extra");
+                        exit;
+                        
                     }
 
                     else {
@@ -75,6 +81,7 @@
                     
                     $conn->close();
                 }
+                
             }
 
             function test_input($data) {
@@ -90,7 +97,7 @@
             
         <h2>Guest Login</h2>
         
-        <p style="font-weight: bold" align="right"><a href="signin.php">register &#128100;</a></p>
+        <p style="font-weight: bold" align="right"><a href="registration.php">register &#128100;</a></p>
         
         <span class="error">
             <?php if(!$isValid){ echo "Invalid entries";}?>
@@ -106,3 +113,4 @@
 
     </body>
 </html>
+

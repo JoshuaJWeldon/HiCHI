@@ -5,12 +5,12 @@
         <link rel="stylesheet" href="../style.css" type="text/css">
         <style>.error {color: #FF0000;}</style>
     </head>
-    
     <body>
             
         <!-- Create err messages if necessary -->
         <?php
-                
+            
+        
             $firstnameErr = $lastnameErr = $IDErr = $genderErr = "";
             $firstname = $lastname = $ID = $gender = "";
             $isValid = TRUE;
@@ -99,7 +99,7 @@
                     $conn = new mysqli($servername, $username, $pass, $dbname);
                 
                     if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
+                        exit ('<p>Connection failed </p>');
                     }
                 
                     $sql = "INSERT INTO users (firstname, lastname, ID, gender) VALUES ('" . 
@@ -108,7 +108,14 @@
                 
                     if ($conn->query($sql) === TRUE) {
                         $conn->close();
-                        header("Location: http://146.148.87.66/GuestA/login.php");
+                        
+                        /* Redirect to a different page in the current directory that was requested */
+                        $host  = $_SERVER['HTTP_HOST'];
+                        $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                        $extra = 'login.php';
+                        header("Location: http://$host$uri/$extra");
+                        exit;
+                        
                     }
                     
                     else {
@@ -162,3 +169,4 @@
 
     </body>
 </html>
+
