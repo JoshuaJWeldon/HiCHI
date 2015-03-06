@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +18,7 @@
 		<main id="center" class="column">
 			<article>
     			
-    			<h2> <?php session_start(); echo $_SESSION["firstname"]; ?> </h2>
+    			<h2> <?php echo $_SESSION["firstname"]; ?> </h2>
 			
                 <p> <?php echo "Your GuestID is: <i>" . $_SESSION['ID'] . "</i>";?></p>
                 

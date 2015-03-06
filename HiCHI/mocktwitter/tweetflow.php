@@ -1,3 +1,88 @@
+<?php session_start(); 
+    
+        $tweetError = "";
+        
+        $servername = "173.194.254.168";
+        $username   = "root";
+        $password   = "NormanVjo@2";
+        $dbname     = "hichi";
+            
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+            
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+                
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    
+            if ($_COOKIE["likeID"] != 0) {
+                
+                $sql = "UPDATE tweets SET likes = likes + 1 WHERE ID = " . $_COOKIE['likeID'];
+                 
+                if ($conn->query($sql) === FALSE) {
+                    $tweetError = "<p> Could not like </p>";
+				} 
+					
+            }
+
+            if ($_COOKIE["retweetID"] != 0) {
+                
+                $sql = "SELECT guestID, tweet FROM tweets WHERE ID = " . $_COOKIE['retweetID'];
+                
+
+                $result = $conn->query($sql);
+                
+                if ($result->num_rows > 0) {
+                         
+                    $row = $result->fetch_assoc();
+                    
+                    $sql = "INSERT INTO tweets (guestID, tweet, date) VALUES (" . $_SESSION['ID'] . ", ' " . $row['tweet'] . " <br> <i> Retweeted from <b>" . $row['guestID'] . "</b></i> ', NOW())";
+                   
+                    if ($conn->query($sql) === FALSE) {
+                        $tweetError = "<p> Could not retweet </p>";
+				    }
+				    else{
+    				    $sql = "UPDATE tweets SET retweets = retweets + 1 WHERE ID = " . $_COOKIE['retweetID'];
+    				    
+    				    if ($conn->query($sql) === FALSE) {
+                            $tweetError = "<p> Could not retweet </p>";
+				        }
+				    }  
+				}
+				
+				else{
+    				$tweetError = "<p> Could not retweet </p>";
+				}
+					
+            }
+            
+            if ($_COOKIE["commentID"] != 0) {
+                
+                $_SESSION['commentID'] = $_COOKIE['commentID'];
+                
+                $conn->close();
+                
+                /* Redirect to a different page in the current directory that was requested */
+                $host  = $_SERVER['HTTP_HOST'];
+                $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                $extra = 'commentflow.php';
+                header("Location: http://$host$uri/$extra");
+                exit;
+					
+            }  
+             
+            $_SERVER["REQUEST_METHOD"] = "";
+                
+        }
+            
+        setcookie("likeID", 0);
+        setcookie("retweetID", 0);
+        setcookie("commentID", 0); 
+    
+    
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,88 +113,9 @@
     
     <h3> Timeline: </h3>
     
-    <?php
-            
-        session_start();
+    <?php       
         
-        $servername = "173.194.254.168";
-        $username   = "root";
-        $password   = "NormanVjo@2";
-        $dbname     = "hichi";
-            
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-            
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
-                
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    
-            if ($_COOKIE["likeID"] != 0) {
-                
-                $sql = "UPDATE tweets SET likes = likes + 1 WHERE ID = " . $_COOKIE['likeID'];
-                 
-                if ($conn->query($sql) === FALSE) {
-                    echo "<p> Could not like </p>";
-				} 
-					
-            }
-
-            if ($_COOKIE["retweetID"] != 0) {
-                
-                $sql = "SELECT guestID, tweet FROM tweets WHERE ID = " . $_COOKIE['retweetID'];
-                
-
-                $result = $conn->query($sql);
-                
-                if ($result->num_rows > 0) {
-                         
-                    $row = $result->fetch_assoc();
-                    
-                    $sql = "INSERT INTO tweets (guestID, tweet, date) VALUES (" . $_SESSION['ID'] . ", ' " . $row['tweet'] . " <br> <i> Retweeted from <b>" . $row['guestID'] . "</b></i> ', NOW())";
-                   
-                    if ($conn->query($sql) === FALSE) {
-                        echo "<p> Could not retweet </p>";
-				    }
-				    else{
-    				    $sql = "UPDATE tweets SET retweets = retweets + 1 WHERE ID = " . $_COOKIE['retweetID'];
-    				    
-    				    if ($conn->query($sql) === FALSE) {
-                            echo "<p> Could not retweet </p>";
-				        }
-				    }  
-				}
-				
-				else{
-    				echo "<p> Could not retweet </p>";
-				}
-					
-            }
-            
-            if ($_COOKIE["commentID"] != 0) {
-                
-                $_SESSION['commentID'] = $_COOKIE['commentID'];
-                
-                $conn->close();
-                
-                /* Redirect to a different page in the current directory that was requested */
-                $host  = $_SERVER['HTTP_HOST'];
-                $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-                $extra = 'commentflow.php';
-                header("Location: http://$host$uri/$extra");
-                exit;
-					
-            }  
-             
-            $_SERVER["REQUEST_METHOD"] = "";
-                
-        }
-            
-        setcookie("likeID", 0);
-        setcookie("retweetID", 0);
-        setcookie("commentID", 0);
+        echo $tweetError;
         
         $sql = "SELECT * 
 				FROM tweets 

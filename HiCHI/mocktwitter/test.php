@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,8 +29,7 @@
     <p> Wait for at most 20 seconds for your tweet to show. Thank you! </p>
     
     <?php
-            
-        session_start();
+
         
         $servername = "173.194.254.168";
         $username   = "root";

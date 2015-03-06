@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,8 +15,6 @@
     <br>
     
     <?php
-            
-        session_start();
         
         $comment = "";
         

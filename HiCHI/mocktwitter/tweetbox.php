@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,13 +8,15 @@
 </head>
 <body>
     <?php
-            
-        session_start();
                 
         $tweetErr = "";
         $tweet = "";
+        $tweetMessage = "";
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            
+            
+            $tweetMessage = "Please wait at most 20sec for tweet to show.";
                     
             //firstname
             if (!empty($_POST["tweet"])) {
@@ -38,6 +41,7 @@
                  
                 if ($conn->query($sql) === FALSE) {
                     $tweetErr = "Could not tweet, try again.";
+                    $tweetMessage = "";
 				} 
 					
                 $conn->close();
@@ -66,7 +70,7 @@
         <textarea name="tweet" rows="5" cols="50" style="resize: none"></textarea>
         <br><br>
                 
-        <input type="submit" name="button" value="tweet">
+        <input type="submit" name="button" value="tweet"> <?php echo $tweetMessage; ?>
     </form>
            
 
